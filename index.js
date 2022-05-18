@@ -15,7 +15,26 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.6iamp.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+async function run() {
+    try {
+        await client.connect();
+        const todoCollection = client.db('todoCollection').collection('todos');
 
+        // GET todos from db
+        app.get('/todos', async (req, res) => {
+            const query = {};
+            const cursor = todoCollection.find(query);
+            const todos = await cursor.toArray();
+            res.send(todos);
+
+        })
+    }
+    finally {
+
+    }
+}
+
+run().catch(console.dir);
 
 
 
