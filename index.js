@@ -28,6 +28,12 @@ async function run() {
             res.send(todos);
 
         })
+
+        app.post('/todo', async (req, res) => {
+            const newTask = req.body;
+            const result = await todoCollection.insertOne(newTask)
+            res.send(result)
+        })
     }
     finally {
 
