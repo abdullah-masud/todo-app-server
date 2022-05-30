@@ -19,11 +19,11 @@ async function run() {
         await client.connect();
         const todoCollection = client.db('todoCollection').collection('todos');
 
-        // GET todos from db
+        // GET todos from db based on email
         app.get('/todos', async (req, res) => {
-            const query = {};
-            const cursor = todoCollection.find(query);
-            const todos = await cursor.toArray();
+            const email = req.query.email;
+            const query = { email: email };
+            const todos = await todoCollection.find(query).toArray();
             res.send(todos);
 
         })
@@ -33,6 +33,19 @@ async function run() {
             const newTask = req.body;
             const result = await todoCollection.insertOne(newTask)
             res.send(result)
+        })
+
+        app.patch('/complete/:id', async (req, res) => {
+            const id = req.params.id;
+            const isComplete = req.body;
+            const filter = { _id: ObjectId(id) }
+            const updatedDoc = {
+                $set: {
+                    isComplete: isComplete.isComplete
+                }
+            }
+            const result = todoCollection.updateOne(filter, updatedDoc)
+            res.send(result);
         })
 
         // DELETE todo from db
